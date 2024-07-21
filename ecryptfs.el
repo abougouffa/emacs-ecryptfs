@@ -17,12 +17,15 @@
 
 ;;; Commentary:
 
-;;  Mount and unmount eCryptfs private directory from Emacs
+;; Mount and unmount eCryptfs private directory from Emacs
 ;;
-;; This allows me to mount my private directory encrypted using ecryptfs-utils.
-;; It is a port of "ecryptfs-mount-private" shell command. It extracts the
-;; encryption key from a GPG encrypted file containing the eCryptfs password.
+;; This allows to mount my private directory encrypted using "ecryptfs-utils".
+;; It is a port of the "ecryptfs-mount-private" shell command.
+;;
+;; This package can optionally extract the encryption key from a GPG encrypted
+;; file containing the eCryptfs password (See: `ecryptfs-passphrase-gpg-file').
 ;; The decryption of the password is performed using Emacs' `epg'.
+
 
 ;;; Code:
 

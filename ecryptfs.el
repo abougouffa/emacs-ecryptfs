@@ -29,6 +29,7 @@
 
 ;;; Code:
 
+(require 'epa) ; to avoid function definition is void: `epa-passphrase-callback-function'
 (require 'epg)
 (autoload 'cl-every "cl-extras")
 

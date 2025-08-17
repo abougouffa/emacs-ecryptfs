@@ -73,6 +73,12 @@
   "Return eCryptfs' wrapped passphrase signature file path."
   (expand-file-name (file-name-with-extension ecryptfs-private-dir-name ".sig") ecryptfs-root-dir))
 
+(defun ecryptfs--mount-path ()
+  "Return eCryptfs' mount path."
+  (with-temp-buffer
+    (insert-file-contents (expand-file-name (file-name-with-extension ecryptfs-private-dir-name ".mnt") ecryptfs-root-dir))
+    (string-trim (buffer-string))))
+
 (defun ecryptfs--passphrase ()
   "Return eCryptfs' passphrase from the GPG encrypted password file.
 If `ecryptfs-passphrase-gpg-file' is not set or set but doesn't exist,
@@ -94,7 +100,7 @@ ask for the password."
 
 (defun ecryptfs-available-p ()
   "Is eCryptfs available on the current system?"
-  (and (file-directory-p (expand-file-name ecryptfs-private-dir-name "~"))
+  (and (file-directory-p (ecryptfs--mount-path))
        (cl-every #'file-exists-p (list ecryptfs-mount-private-cmd
                                        ecryptfs-umount-private-cmd
                                        (ecryptfs--wrapped-passphrase-file)
@@ -111,7 +117,7 @@ ask for the password."
 (defun ecryptfs-private-mounted-p ()
   "Is eCryptfs' private directory is mounted?"
   (let ((mount (shell-command-to-string "mount")))
-    (and (string-match-p (concat ".*" (expand-file-name ecryptfs-private-dir-name "~") ".*ecryptfs.*") mount)
+    (and (string-match-p (concat ".*" (ecryptfs--mount-path) ".*ecryptfs.*") mount)
          t)))
 
 ;;;###autoload
@@ -138,8 +144,7 @@ ask for the password."
               (prog1 try-again (setq try-again nil)))
         (if (zerop (shell-command (ecryptfs--unwrap-passphrase-command) ecryptfs-buffer-name))
             (message "Successfully mounted private directory.")
-          (user-error "A problem occurred while mounting the private directory, see %s"
-                      ecryptfs-buffer-name))))))
+          (user-error "A problem occurred while mounting the private directory, see %s" ecryptfs-buffer-name))))))
 
 ;;;###autoload
 (defun ecryptfs-umount-private ()

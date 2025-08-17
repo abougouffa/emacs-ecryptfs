@@ -1,12 +1,12 @@
 ;;; ecryptfs.el --- Mount and unmount eCryptfs private directory from Emacs -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2021-2024 Abdelhak Bougouffa
+;; Copyright (C) 2021-2025 Abdelhak Bougouffa
 ;;
 ;; Author: Abdelhak Bougouffa (rot13 "nobhtbhssn@srqbencebwrpg.bet")
 ;; Maintainer: Abdelhak Bougouffa
 ;; Created: October 11, 2021
-;; Modified: July 22, 2024
-;; Version: 0.1.0
+;; Modified: August 18, 2025
+;; Version: 0.1.1
 ;; Keywords: convenience files processes tools unix
 ;; Homepage: https://github.com/abougouffa/emacs-ecryptfs
 ;; Package-Requires: ((emacs "28.1"))
@@ -47,10 +47,10 @@
   :group 'ecryptfs
   :type 'directory)
 
-(defcustom ecryptfs-passphrase-gpg-file (concat ecryptfs-root-dir "ecryptfs-passphrase.gpg")
+(defcustom ecryptfs-passphrase-gpg-file (expand-file-name "ecryptfs-passphrase.gpg" ecryptfs-root-dir)
   "GPG encrypted file containing eCryptfs password."
   :group 'ecryptfs
-  :type 'file)
+  :type '(choice file (symbol nil)))
 
 (defcustom ecryptfs-mount-private-cmd "/sbin/mount.ecryptfs_private"
   "The command used to mount eCryptfs private directory."
@@ -67,11 +67,11 @@
 
 (defun ecryptfs--wrapped-passphrase-file ()
   "Return eCryptfs' wrapped passphrase file path."
-  (concat ecryptfs-root-dir "wrapped-passphrase"))
+  (expand-file-name "wrapped-passphrase" ecryptfs-root-dir))
 
 (defun ecryptfs--mount-passphrase-sig-file ()
   "Return eCryptfs' wrapped passphrase signature file path."
-  (concat ecryptfs-root-dir ecryptfs-private-dir-name ".sig"))
+  (expand-file-name (file-name-with-extension ecryptfs-private-dir-name ".sig") ecryptfs-root-dir))
 
 (defun ecryptfs--passphrase ()
   "Return eCryptfs' passphrase from the GPG encrypted password file.
